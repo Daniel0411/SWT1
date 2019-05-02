@@ -93,19 +93,16 @@ public class Main extends JFrame {
     init();
   }
 
-  private void init()
-  {
+  private void init() {
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     GraphicsDevice[] gs = ge.getScreenDevices();
     GraphicsDevice gd = gs[0];
     GraphicsConfiguration gc = gd.getDefaultConfiguration();
 
-    try
-    {
+    try {
       UIManager.setLookAndFeel(o.getLookAndFeel());
       SwingUtilities.updateComponentTreeUI(this);
-    }
-    catch (Exception l)
+    } catch (Exception l)
     {
     }
 
