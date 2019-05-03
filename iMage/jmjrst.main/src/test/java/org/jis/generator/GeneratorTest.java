@@ -51,8 +51,31 @@ public class GeneratorTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testRotateImage() {
+	public void testRotateImageNotMultipleOf90() {
 		generator.rotateImage(image, 0.42);
 	}
+	
+	@Test
+	public void testRotateImageBy90Degree() {
+		double rad = Math.PI/180*90;
+		BufferedImage rotatedImage = generator.rotateImage(image, rad);
+		assertEquals(image.getHeight(), rotatedImage.getWidth());
+		assertEquals(image.getWidth(), rotatedImage.getHeight());
+		//assertEquals(image, rotatedImage);
+	}
+	
+	public void testRotateImageBy270Degree() {
+		double rad = Math.PI/180*270;
+		BufferedImage rotatedImage = generator.rotateImage(image, rad);
+		assertEquals(image.getHeight(), rotatedImage.getWidth());
+		assertEquals(image.getWidth(), rotatedImage.getHeight());
+		//assertEquals(image, rotatedImage);
+	}
+	
+	
+	
+	
+	
+	
 
 }
