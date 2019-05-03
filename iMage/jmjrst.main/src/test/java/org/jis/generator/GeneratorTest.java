@@ -1,6 +1,7 @@
 package org.jis.generator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -18,6 +19,7 @@ public class GeneratorTest {
 
 	private Generator generator;
 	private BufferedImage image;
+
 	/**
 	 * 
 	 * @throws Exception
@@ -36,15 +38,21 @@ public class GeneratorTest {
 	@After
 	public void tearDown() throws Exception {
 	}
-	
+
 	@Test
 	public void testRotateImageNoRotation() {
 		BufferedImage newImage = generator.rotateImage(image, 0.0);
 		assertEquals(newImage, image);
 	}
-	
+
 	@Test
 	public void testRotateImageNullImage() {
-		assertEquals(null, generator.rotateImage(null, 0.0));
+		assertNull(generator.rotateImage(null, 0.0));
 	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testRotateImage() {
+		generator.rotateImage(image, 0.42);
+	}
+
 }
