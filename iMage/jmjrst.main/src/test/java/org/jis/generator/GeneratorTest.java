@@ -2,6 +2,7 @@ package org.jis.generator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -54,28 +55,57 @@ public class GeneratorTest {
 	public void testRotateImageNotMultipleOf90() {
 		generator.rotateImage(image, 0.42);
 	}
-	
+
 	@Test
 	public void testRotateImageBy90Degree() {
-		double rad = Math.PI/180*90;
-		BufferedImage rotatedImage = generator.rotateImage(image, rad);
+		BufferedImage rotatedImage = generator.rotateImage(image, Math.toRadians(90));
 		assertEquals(image.getHeight(), rotatedImage.getWidth());
 		assertEquals(image.getWidth(), rotatedImage.getHeight());
-		//assertEquals(image, rotatedImage);
+		// assertEquals(image, rotatedImage);
 	}
-	
-	public void testRotateImageBy270Degree() {
-		double rad = Math.PI/180*270;
-		BufferedImage rotatedImage = generator.rotateImage(image, rad);
-		assertEquals(image.getHeight(), rotatedImage.getWidth());
-		assertEquals(image.getWidth(), rotatedImage.getHeight());
-		//assertEquals(image, rotatedImage);
-	}
-	
-	
-	
-	
-	
-	
 
+	@Test
+	public void testRotateImageBy270Degree() {
+		BufferedImage rotatedImage = generator.rotateImage(image, Math.toRadians(270));
+		assertEquals(image.getHeight(), rotatedImage.getWidth());
+		assertEquals(image.getWidth(), rotatedImage.getHeight());
+		// assertEquals(image, rotatedImage);
+	}
+
+	@Test
+	public void testRotateImageByMinus90Degree() {
+		BufferedImage rotatedImage = generator.rotateImage(image, Math.toRadians(-90));
+		assertEquals(image.getHeight(), rotatedImage.getWidth());
+		assertEquals(image.getWidth(), rotatedImage.getHeight());
+		assertTrue(compareImages(rotatedImage, generator.rotateImage(image, Math.toRadians(270))));
+	}
+
+	@Test
+	public void testRotateImageByMinus270Degree() {
+		BufferedImage rotatedImage = generator.rotateImage(image, Math.toRadians(-270));
+		assertEquals(image.getHeight(), rotatedImage.getWidth());
+		assertEquals(image.getWidth(), rotatedImage.getHeight());
+		assertTrue(compareImages(rotatedImage, generator.rotateImage(image, Math.toRadians(90))));
+	}
+
+	public static boolean compareImages(BufferedImage imgA, BufferedImage imgB) {
+		// The images must be the same size.
+		if (imgA.getWidth() != imgB.getWidth() || imgA.getHeight() != imgB.getHeight()) {
+			return false;
+		}
+
+		int width = imgA.getWidth();
+		int height = imgA.getHeight();
+
+		// Loop over every pixel.
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				// Compare the pixels for equality.
+				if (imgA.getRGB(x, y) != imgB.getRGB(x, y)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 }
