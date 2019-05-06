@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 
 /**
- * Test class for generator
+ * Test class for Generator
  * 
  * @author Daniel Vollmer
  *
@@ -29,6 +29,7 @@ public class GeneratorTest {
 	private Generator generator;
 	private BufferedImage image;
 	private BufferedImage rotatedImage;
+	private String testImageName = "image";
 
 	@BeforeClass
 	public static void setUpClass() {
@@ -39,7 +40,7 @@ public class GeneratorTest {
 	@Before
 	public void setUp() throws Exception {
 		generator = new Generator(null, 0);
-		image = ImageIO.read(this.getClass().getResourceAsStream("/image.jpg"));
+		image = ImageIO.read(this.getClass().getResourceAsStream("/" + testImageName + ".jpg"));
 	}
 
 	@After
@@ -48,14 +49,11 @@ public class GeneratorTest {
 		SimpleDateFormat formatter = new SimpleDateFormat("MM-dd_HH.mm.ss.SSS");
 		String date = formatter.format(time);
 		if (rotatedImage != null) {
-			String imageName = testMethodName.getMethodName() + "_" + date;
-			File outputfile = new File("target/test/" + imageName + ".jpg");
+			String imageFullName = testImageName + "_rotated_" + date;
+			File outputfile = new File("target/test/" + imageFullName + ".jpg");
 			ImageIO.write(rotatedImage, "jpg", outputfile);
 		}
 	}
-
-	@Rule
-	public TestName testMethodName = new TestName();
 
 	@Test
 	public void noRotationTest() {
@@ -141,6 +139,8 @@ public class GeneratorTest {
 		assertTrue(compareImages(rotatedImage, generator.rotateImage(image, Math.toRadians(90))));
 	}
 
+	// Compares each pixel of two images. Returns true if the color of all pixel are
+	// the same else false.
 	public boolean compareImages(BufferedImage imageA, BufferedImage imageB) {
 		if (imageA.getWidth() != imageB.getWidth() || imageA.getHeight() != imageB.getHeight()) {
 			return false;
