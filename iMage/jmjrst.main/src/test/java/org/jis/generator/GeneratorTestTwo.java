@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.util.Locale;
 import java.util.Vector;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -11,12 +13,15 @@ import java.util.zip.ZipFile;
 import javax.imageio.ImageIO;
 
 import org.jis.Main;
+import org.jis.Messages;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -32,14 +37,7 @@ public class GeneratorTestTwo {
 
 	private Generator generator;
 	private BufferedImage image;
-	private BufferedImage rotatedImage;
 	private String testImageName = "image";
-
-	@BeforeClass
-	public static void setUpClass() {
-		File dir = new File("temp");
-		dir.mkdir();
-	}
 
 	@Rule
 	public MockitoRule mockito = MockitoJUnit.rule();
@@ -49,41 +47,64 @@ public class GeneratorTestTwo {
 
 	@Before
 	public void setUp() throws Exception {
+		File temp = new File("temp");
+		temp.mkdir();
+		MockitoAnnotations.initMocks(this);
+		Messages mes = new Messages(new Locale("en"));
+		mainMock.mes = mes;
 		generator = new Generator(mainMock, 0);
 		image = ImageIO.read(this.getClass().getResourceAsStream("/" + testImageName + ".jpg"));
 	}
-	
-	
-	
-	
+
+	@After
+	public void tearDown() {
+		File temp = new File("temp");
+		removeDir(temp);
+	}
+
+	public static void removeDir(File dir) {
+		if (dir.isDirectory()) {
+			File[] files = dir.listFiles();
+			if (files != null && files.length > 0) {
+				for (File aFile : files) {
+					removeDir(aFile);
+				}
+			}
+			dir.delete();
+		} else {
+			dir.delete();
+		}
+	}
+
+	/**
+	 * Tests if the method reads 2 input files from the correct path and writes two
+	 * files with the correct name to the correct path.
+	 */
 	@Test
-	public void rotateAngleTest() throws IOException {
-		File tempImage = new File("temp/imagerotated.jpg");
-		ImageIO.write(image, "jpg", tempImage);
-		
-		generator.rotate(tempImage, 100);
-	}
-	
-	
-	
-	
-	
-	
-	@Ignore
 	public void generateTextTest() throws IOException {
-		File tempImage = new File("temp/image.jpg");
+		File inputDir = new File("temp/input");
+		File resizeDir = new File("temp/resized");
+		inputDir.mkdir();
+		resizeDir.mkdir();
+
+		File tempImage = new File("temp/input/image.jpg");
 		ImageIO.write(image, "jpg", tempImage);
-		
-		generator.generateText(new File("temp"), new File("temp"), 100, 100);
+		File tempImageTwo = new File("temp/input/imageTwo.jpg");
+		ImageIO.write(image, "jpg", tempImageTwo);
+
+		generator.generateText(inputDir, resizeDir, 100, 100);
+
+		assertTrue(new File("temp/resized/t_image.jpg").exists());
+		assertTrue(new File("temp/resized/t_imageTwo.jpg").exists());
 	}
-	
+
 	/**
 	 * Tests if the input file still exists after the rotate method modified the
 	 * file. (Not really obvious in this Generator class)
 	 * 
 	 * @throws IOException
 	 */
-	
+
 	@Test
 	public void rotateFileExistsTest() throws IOException {
 		File tempImage = new File("temp/image.jpg");
