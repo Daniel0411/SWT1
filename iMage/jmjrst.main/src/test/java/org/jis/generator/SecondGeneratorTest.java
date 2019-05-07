@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.util.Locale;
 import java.util.Vector;
 import java.util.zip.ZipException;
@@ -15,9 +14,7 @@ import javax.imageio.ImageIO;
 import org.jis.Main;
 import org.jis.Messages;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -33,7 +30,7 @@ import static org.junit.Assert.*;
  * @author Daniel Vollmer
  *
  */
-public class GeneratorTestTwo {
+public class SecondGeneratorTest {
 
 	private Generator generator;
 	private BufferedImage image;
@@ -62,6 +59,11 @@ public class GeneratorTestTwo {
 		removeDir(temp);
 	}
 
+	/**
+	 * Deletes a directory even if it's not empty.
+	 * 
+	 * @param dir
+	 */
 	public static void removeDir(File dir) {
 		if (dir.isDirectory()) {
 			File[] files = dir.listFiles();
@@ -87,15 +89,15 @@ public class GeneratorTestTwo {
 		inputDir.mkdir();
 		resizeDir.mkdir();
 
-		File tempImage = new File("temp/input/image.jpg");
+		File tempImage = new File("temp/input/" + testImageName + ".jpg");
 		ImageIO.write(image, "jpg", tempImage);
-		File tempImageTwo = new File("temp/input/imageTwo.jpg");
+		File tempImageTwo = new File("temp/input/" + testImageName + "Two.jpg");
 		ImageIO.write(image, "jpg", tempImageTwo);
 
 		generator.generateText(inputDir, resizeDir, 100, 100);
 
-		assertTrue(new File("temp/resized/t_image.jpg").exists());
-		assertTrue(new File("temp/resized/t_imageTwo.jpg").exists());
+		assertTrue(new File("temp/resized/t_" + testImageName + ".jpg").exists());
+		assertTrue(new File("temp/resized/t_" + testImageName + "Two.jpg").exists());
 	}
 
 	/**
@@ -107,7 +109,7 @@ public class GeneratorTestTwo {
 
 	@Test
 	public void rotateFileExistsTest() throws IOException {
-		File tempImage = new File("temp/image.jpg");
+		File tempImage = new File("temp/" + testImageName + ".jpg");
 		ImageIO.write(image, "jpg", tempImage);
 		generator.rotate(tempImage);
 
