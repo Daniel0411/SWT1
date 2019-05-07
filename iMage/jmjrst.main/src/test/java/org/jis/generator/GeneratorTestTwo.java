@@ -53,6 +53,21 @@ public class GeneratorTestTwo {
 	}
 
 	/**
+	 * Tests if the input file still exists after the rotate method modified the
+	 * file. (Not really obvious in this Generator class)
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void rotateTest() throws IOException {
+		File tempImage = new File("temp/image.jpg");
+		ImageIO.write(image, "jpg", tempImage);
+		generator.rotate(tempImage);
+
+		assertTrue(tempImage.exists());
+	}
+
+	/**
 	 * Tests if an image has the same scale as before if width and height parameter
 	 * are the values of the actual image.
 	 * 
@@ -64,7 +79,7 @@ public class GeneratorTestTwo {
 		File iout = new File("temp/scaledImage.jpg");
 		int height = image.getHeight();
 		int width = image.getWidth();
-		generator.generateImage(imageFile, iout, true, width, height, "scaled");
+		generator.generateImage(imageFile, iout, false, width, height, "scaled");
 
 		BufferedImage scaledImage = ImageIO.read(new File("temp/scaledImage.jpg"));
 		assertEquals(scaledImage.getHeight(), height);
