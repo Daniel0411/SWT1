@@ -51,11 +51,30 @@ public class GeneratorTestTwo {
 		generator = new Generator(mainMock, 0);
 		image = ImageIO.read(this.getClass().getResourceAsStream("/" + testImageName + ".jpg"));
 	}
-	
+
+	/**
+	 * Tests if an image has the same scale as before if width and height parameter
+	 * are the values of the actual image.
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void generateImageNoScaleCorrectScaleTest() throws IOException {
+		File imageFile = new File("src/test/resources/" + testImageName + ".jpg");
+		File iout = new File("temp/scaledImage.jpg");
+		int height = image.getHeight();
+		int width = image.getWidth();
+		generator.generateImage(imageFile, iout, true, width, height, "scaled");
+
+		BufferedImage scaledImage = ImageIO.read(new File("temp/scaledImage.jpg"));
+		assertEquals(scaledImage.getHeight(), height);
+		assertEquals(scaledImage.getWidth(), width);
+	}
+
 	/**
 	 * Tests if the number of zipped files is correct.
 	 * 
-	 * @throws ZipException 
+	 * @throws ZipException
 	 * @throws IOException
 	 */
 	@Test
