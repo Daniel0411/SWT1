@@ -139,7 +139,7 @@ public class GeneratorTest {
 
 	// Compares each pixel of two images. Returns true if the color of all pixel are
 	// the same else false.
-	public boolean compareImages(BufferedImage imageA, BufferedImage imageB) {
+	public static boolean compareImages(BufferedImage imageA, BufferedImage imageB) {
 		if (imageA.getWidth() != imageB.getWidth() || imageA.getHeight() != imageB.getHeight()) {
 			return false;
 		}
