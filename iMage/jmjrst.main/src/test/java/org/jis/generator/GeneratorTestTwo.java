@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import org.jis.Main;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -51,15 +52,40 @@ public class GeneratorTestTwo {
 		generator = new Generator(mainMock, 0);
 		image = ImageIO.read(this.getClass().getResourceAsStream("/" + testImageName + ".jpg"));
 	}
-
+	
+	
+	
+	
+	@Test
+	public void rotateAngleTest() throws IOException {
+		File tempImage = new File("temp/imagerotated.jpg");
+		ImageIO.write(image, "jpg", tempImage);
+		
+		generator.rotate(tempImage, 100);
+	}
+	
+	
+	
+	
+	
+	
+	@Ignore
+	public void generateTextTest() throws IOException {
+		File tempImage = new File("temp/image.jpg");
+		ImageIO.write(image, "jpg", tempImage);
+		
+		generator.generateText(new File("temp"), new File("temp"), 100, 100);
+	}
+	
 	/**
 	 * Tests if the input file still exists after the rotate method modified the
 	 * file. (Not really obvious in this Generator class)
 	 * 
 	 * @throws IOException
 	 */
+	
 	@Test
-	public void rotateTest() throws IOException {
+	public void rotateFileExistsTest() throws IOException {
 		File tempImage = new File("temp/image.jpg");
 		ImageIO.write(image, "jpg", tempImage);
 		generator.rotate(tempImage);
