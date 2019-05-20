@@ -20,5 +20,6 @@
 	</repositories>
 	<modules>
 		<module>jmjrst.main</module>
+		<module>iMage.HDrize</module>
 	</modules>
 </project>
