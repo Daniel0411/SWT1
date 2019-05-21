@@ -23,6 +23,39 @@ public class MatrixTest {
 	}
 
 	@Test
+	public void contructorWithRowAndColumnTest() {
+		int rows = 3;
+		int cols = 4;
+		Matrix mtxTest = new Matrix(rows,cols);
+		for (int i = 0; i< rows;i++) {
+			for (int j = 0; j < cols; j++) {
+				assertEquals(0.0, mtxTest.get(i, j), 0.0000001);
+			}
+		}
+	}
+	
+	@Test
+	public void constructorWithDArrayTest() {
+		Matrix mtxTest = new Matrix(correctMatrix);
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 2; j++) {
+				assertEquals(correctMatrix[i][j], mtxTest.get(i, j), 0.00000001);
+			}
+			
+		}
+	}
+	
+	@Test
+	public void constructorWithMatrixTest() {
+		Matrix mtxTest = new Matrix(mtx);
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 2; j++) {
+				assertEquals(correctMatrix[i][j], mtxTest.get(i, j), 0.00000001);
+			}
+		}
+	}
+	
+	@Test
 	public void copyTest() {
 		double[][] copyMtx = mtx.copy();
 		for (int i = 0; i < 3; i++) {

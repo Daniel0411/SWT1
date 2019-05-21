@@ -15,7 +15,7 @@ public final class Matrix implements IMatrix {
 		this.mtx = new double[mtx.rows()][mtx.cols()];
 		for (int i = 0; i < this.rows(); i++) {
 			for (int j = 0; j < this.cols(); j++) {
-				this.mtx[i][j] = this.get(i, j);
+				this.mtx[i][j] = mtx.get(i, j);
 			}
 		}
 	}
