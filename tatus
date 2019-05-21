@@ -1,0 +1,173 @@
+[33mcommit c880636d032a96c6a80c61bdc03af7392a55f131[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Mon May 20 22:24:32 2019 +0200
+
+    Implemented the Matrix class of iMage.HDrize
+
+[33mcommit 87d8005b921d8cecf9616450280b63006b5e8eba[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Mon May 20 20:08:50 2019 +0200
+
+    Created a Lastenheft for iMage.
+
+[33mcommit 15988debe8760a2e2ef424f23950a2741fd30874[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Mon May 20 14:46:55 2019 +0200
+
+    Added the template for 'Lastenheft'
+
+[33mcommit be9f1ad660f575fd990f0153f00b44f01d5fd71e[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Tue May 7 23:23:34 2019 +0200
+
+    Changed groupID
+
+[33mcommit 8baeb7d8aeae77b7c5965d9581a00483089fe592[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Tue May 7 23:20:50 2019 +0200
+
+    Changed name of GeneratorTestTwo to SecondGeneratorTest. Changed test image name location to a global variable of class SecondGeneratorTest.
+
+[33mcommit 4cf74f6b54d51f66b6bb65a8ab39029f3cf552ed[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Tue May 7 22:55:05 2019 +0200
+
+    Created a test for the generateText method in Generator.java. The test tests if the method reads 2 input files from the correct path and writes two files with the correct name to the correct path.
+
+[33mcommit 2a7b6085a75e481e5768c88ae9824623aa799917[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Tue May 7 21:12:49 2019 +0200
+
+    Created a test for the generateText method in Generator.java. Test doesn't work yet.
+
+[33mcommit bd88ac2c228291c62c110cdf115dd2dfa5d4c94a[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Tue May 7 20:09:18 2019 +0200
+
+    Created a test for the rotate method in Generator.java. The test tests if the input file still exists after the method got called.
+
+[33mcommit fb58011bff73b23b7c8cc1570cfb9e8fc2da0ca8[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Tue May 7 19:44:47 2019 +0200
+
+    Created a test for the generateImage method in Generator.java. Tests if the scaled image has the same scale as the actual image when the height and width parameter are the values of the actual image.
+
+[33mcommit 7267e1a127b06ca9907f847b2a359a776ba04cb0[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Tue May 7 19:30:17 2019 +0200
+
+    Created two tests for the createZip method in Generator.java. One tests if a zip file gets created with the correct name and correct path and the other tests if the number of the zipped files is correct when two files are given.
+
+[33mcommit 4310e3f61c7e61292ca1f55e0cccaca920f0e551[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Tue May 7 19:24:28 2019 +0200
+
+    Added dependency for mockito. Created a second test class for Generator.java. compareImage(...) in GeneratorTest is now static.
+
+[33mcommit 3d635a7151af269e94bbdb2c599b805902d01f5b[m[33m ([m[1;32mRotateImageTest[m[33m)[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Mon May 6 20:38:41 2019 +0200
+
+    Changed artifactID of jmjrst.main.
+
+[33mcommit 9419c6756637740dd70b7c68d6637812f1806549[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Mon May 6 20:25:44 2019 +0200
+
+    Removed not used imports in GeneratorTest.java
+
+[33mcommit 0612c402e64acf1ac71ea4a9554a8ba8774e4ed8[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Mon May 6 20:10:44 2019 +0200
+
+    Changed test image name. It now is a global variable.
+
+[33mcommit ecc57ee168f23a15ca03e56409d91a2b024a9596[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Mon May 6 15:32:00 2019 +0200
+
+    Moved icons back into the correct location. Created patch for rotateImage(...) method in Generator.java.
+
+[33mcommit 9cddabff9e74e742412e7280ffc496127f275e4d[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Mon May 6 00:15:47 2019 +0200
+
+    Changed the names of the test methods in GeneratorTest.
+
+[33mcommit e8368754af5f24fdfc5da32ef39b07a63509fcee[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Fri May 3 14:02:55 2019 +0200
+
+    -90 and -270 degree are now accepted by rotateImage(...). Added two tests for the rotation of an image by -90 and -270 degree.
+
+[33mcommit 70d87844a3667e682daa183dd9414178e7fff7ec[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Fri May 3 12:53:47 2019 +0200
+
+    Added tests for the rotation of an image by 90 and 270 degree.
+
+[33mcommit 125016ef5737e272606eaffeee487de7444e03e4[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Fri May 3 12:31:01 2019 +0200
+
+    Added a test for the case that the second parameter of rotateImage(...) is not a multiple of 90
+
+[33mcommit b372a29eba937dd254956a76529a8f3243e82184[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Fri May 3 11:59:31 2019 +0200
+
+    Created test class for Generator. Added two tests for the rotateImage(...) method. One test calls the method with an instance of BufferedImage and 0.0 and the other test tests the method for the parameter null and 0.0
+
+[33mcommit 72ac8c5f662f68c38ee141c5ef68b3416fd6c5d2[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Thu May 2 19:34:09 2019 +0200
+
+    Corrected 3 Checkstyle warnings in org/jis/Main.java. First warning: Line 97: Curly bracket should be in line 96. Second warning: Line 103: Curly bracket should be in line 102. Third warning: Line 106: The catch block should be in line 105 behind the curly bracket.
+
+[33mcommit 1233629c58cf34e821c7763cfc1e9e5c5be2b0d9[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Thu May 2 19:05:25 2019 +0200
+
+    Main.java is now set as the correct main class.
+
+[33mcommit 50a83eec2599aaf4a4e4dc3e45f3baebe0212910[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Thu May 2 18:23:53 2019 +0200
+
+    LICENSE, gitignore, checkstyle.launch and integration-test.launch will be added to the package now.
+
+[33mcommit 64da05bcee19c0100ad90ac77a687d672bd4750e[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Thu May 2 18:00:07 2019 +0200
+
+    Applied patch for ImageFormatException
+
+[33mcommit c9ee8405669170f547a417c586d1ad225a329228[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Thu May 2 17:56:14 2019 +0200
+
+    Copied License, property files, templates and java source files of module jmjrst.main
+
+[33mcommit 02ba48b29e00a9827498e94347e68dfaa652880b[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Thu May 2 17:44:43 2019 +0200
+
+    Created new module jmjrst.main
+
+[33mcommit 1f484aaa8ef5d077606e2bb5a28b1b8f699830bb[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Thu May 2 17:40:58 2019 +0200
+
+    Added src.xml and modiefied pom.xml. Parent pom.xml can now be detected
+
+[33mcommit fcfe0b1e2e560f534635dddef5d8e8095d4934ec[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Thu May 2 17:36:10 2019 +0200
+
+    Initial commit for iMage
+
+[33mcommit 9b2b82d8bbe4faf78291d129b467945593b65d8d[m
+Author: Daniel Vollmer <daniel.vollmer98@gmail.com>
+Date:   Thu May 2 17:32:54 2019 +0200
+
+    Added gitignore

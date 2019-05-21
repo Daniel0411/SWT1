@@ -1,31 +1,67 @@
 package org.iMage.HDrize.matrix;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
 public class MatrixTest {
-	double[][] arMtx = new double[3][3];
+	double[][] arMtx = new double[3][2];
+	double[][] correctMatrix = { { 0.0, 1.0 }, { 2.0, 3.0 }, { 4.0, 5.0 } };
 	Matrix mtx;
-	
+
 	@Before
 	public void setUp() {
 		int count = 0;
-		for(int i = 0; i < 3; i++) {
-			for(int j = 0;j < 3; j++) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 2; j++) {
 				arMtx[i][j] = count;
 				count++;
 			}
 		}
 		mtx = new Matrix(arMtx);
 	}
-	
+
 	@Test
-	public void simpleMatrixTest() {
-		for(int i = 0; i < 3; i++) {
-			for(int j = 0;j < 3; j++) {
-				System.out.print(mtx.get(i, j) + " | ");
+	public void copyTest() {
+		double[][] copyMtx = mtx.copy();
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 2; j++) {
+				assertEquals(correctMatrix[i][j], copyMtx[i][j], 0.00000001);
 			}
-			System.out.println("");
 		}
+		
+	}
+
+	@Test
+	public void setTest() {
+		mtx = new Matrix(3, 2);
+		int count = 0;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 2; j++) {
+				mtx.set(i, j, count);
+				count++;
+				assertEquals(correctMatrix[i][j], mtx.get(i, j), 0.00000001);
+			}
+		}
+	}
+
+	@Test
+	public void getTest() {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 2; j++) {
+				assertEquals(correctMatrix[i][j], mtx.get(i, j), 0.00000001);
+			}
+		}
+	}
+
+	@Test
+	public void rowTest() {
+		assertEquals(mtx.rows(), 3);
+	}
+
+	@Test
+	public void columnTest() {
+		assertEquals(mtx.cols(), 2);
 	}
 }
