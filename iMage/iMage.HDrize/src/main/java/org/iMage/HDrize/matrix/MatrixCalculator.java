@@ -6,7 +6,69 @@ public class MatrixCalculator implements IMatrixCalculator<Matrix> {
 
 	@Override
 	public Matrix inverse(Matrix mtx) {
-		throw new UnsupportedOperationException("TODO Implement me!");
+		int mtxRows = mtx.rows();
+		int mtxCols = mtx.cols();
+		Matrix extendedMtx = createExtendedMatrix(mtx);
+
+		
+		for (int i = 0; i < mtxRows ; i++) {
+			double divider = extendedMtx.get(i, i);
+			if(divider == 0) {
+				throw new IllegalArgumentException("Matrix can't be inverted!");
+			}
+			for(int j = i; j < mtxCols * 2; j++) {
+				extendedMtx.set(i, j, extendedMtx.get(i, j)/divider);
+			}
+			
+			
+			for (int j = i + 1; j < mtxRows; j++) {
+				double multiOne = extendedMtx.get(i, i);
+				double multiTwo = extendedMtx.get(j, i);
+				for (int k = i; k < mtxCols * 2; k++) {
+					double minus = extendedMtx.get(j, k) * multiOne - extendedMtx.get(i, k) * multiTwo;
+					extendedMtx.set(j, k, minus);
+				}
+			}
+		}
+
+		
+		for (int i = mtxRows - 1; i > 0; i--) {
+			for (int j = i - 1; j >= 0; j--) {
+				double multiOne = extendedMtx.get(i, i);
+				double multiTwo = extendedMtx.get(j, i);
+				for (int k = i; k < mtxCols * 2; k++) {
+					double minus = extendedMtx.get(j, k) * multiOne - extendedMtx.get(i, k) * multiTwo;
+					extendedMtx.set(j, k, minus);
+				}
+			}
+		}
+		
+		return cutLeftHalfOff(extendedMtx);
+	}
+
+	private Matrix createExtendedMatrix(Matrix mtx) {
+		int mtxRows = mtx.rows();
+		int mtxCols = mtx.cols();
+		Matrix extendedMtx = new Matrix(mtxRows, mtxCols * 2);
+		for (int i = 0; i < mtxRows; i++) {
+			for (int j = 0; j < mtxCols; j++) {
+				extendedMtx.set(i, j, mtx.get(i, j));
+				if (i == j) {
+					extendedMtx.set(i, j + mtxCols, 1);
+				}
+			}
+		}
+		return extendedMtx;
+	}
+	
+	private Matrix cutLeftHalfOff(Matrix mtx) {
+		Matrix resultMtx = new Matrix (mtx.rows(), mtx.cols() / 2);
+		for (int i = 0; i < mtx.rows(); i++) {
+			for (int j = mtx.cols() / 2; j < mtx.cols(); j++) {
+				resultMtx.set(i, j - mtx.rows(), mtx.get(i, j));
+			}
+		}
+		return resultMtx;
 	}
 
 	@Override

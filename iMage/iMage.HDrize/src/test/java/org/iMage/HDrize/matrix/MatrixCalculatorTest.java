@@ -8,8 +8,10 @@ import org.junit.Test;
 public class MatrixCalculatorTest {
 	double[][] arMtxA = new double[3][2];
 	double[][] arMtxB = new double[2][3];
+	double[][] arMtxC = {{4,1,-2},{5,-2,-2},{0,4,-3}};
 	Matrix mtxA;
 	Matrix mtxB;
+	Matrix mtxC;
 	MatrixCalculator mtxCalc = new MatrixCalculator();
 
 	@Before
@@ -30,8 +32,23 @@ public class MatrixCalculatorTest {
 			}
 		}
 		mtxB = new Matrix(arMtxB);
+		mtxC = new Matrix(arMtxC);
 	}
 
+	
+	
+	@Test
+	public void inverseTest() {
+		Matrix inverse = mtxCalc.inverse(mtxC);
+		for (int i = 0; i < inverse.rows(); i++) {
+			for (int j = 0; j < inverse.cols(); j++) {
+				System.out.print("|"+inverse.get(i, j) + "|");
+			}
+			System.out.println("|");
+		}
+		assertTrue(true);
+	}
+	
 	@Test
 	public void transposeTest() {
 		double[][] correctTransposed = { { 0.0, 2.0, 4.0 }, { 1.0, 3.0, 5.0 } };

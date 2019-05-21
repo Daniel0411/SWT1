@@ -82,7 +82,7 @@ public final class App {
 		BufferedImage resultImage = hdrize.createRGB(imageList, samples, lambda, mtxCalc, ToneMapping.SRGBGamma);
 
 		try {
-			ImageIO.write(resultImage, "png", new File(output));
+			ImageIO.write(resultImage, "png", new File(output + "/result.png"));
 		} catch (IOException e) {
 			printErrorAndExit(e);
 		}
