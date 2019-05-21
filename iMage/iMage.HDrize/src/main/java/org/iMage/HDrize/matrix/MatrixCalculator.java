@@ -12,7 +12,7 @@ public class MatrixCalculator implements IMatrixCalculator<Matrix> {
 	@Override
 	public Matrix multiply(Matrix a, Matrix b) {
 		if (a.cols() != b.rows()) {
-			throw new IllegalArgumentException("columns of matrix a must be the same number as rows of matrix b.");
+			return null;
 		}
 		Matrix multipliedMtx = new Matrix(a.rows(), b.cols());
 		double value = 0.0;
