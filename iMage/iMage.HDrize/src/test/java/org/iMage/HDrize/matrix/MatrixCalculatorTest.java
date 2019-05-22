@@ -9,9 +9,14 @@ public class MatrixCalculatorTest {
 	double[][] arMtxA = new double[3][2];
 	double[][] arMtxB = new double[2][3];
 	double[][] arMtxC = { { -4, 3, 3 }, { -1, 1, 1 }, { -5, 0, -1 } };
+	double[][] arMtxD = {{4,-1,-1},{4,3,-5},{0,0,0}};
+	double[][] arMtxE = {{1,1},{1,1}};
+	
 	Matrix mtxA;
 	Matrix mtxB;
 	Matrix mtxC;
+	Matrix mtxD;
+	Matrix mtxE;
 	MatrixCalculator mtxCalc = new MatrixCalculator();
 
 	@Before
@@ -33,8 +38,21 @@ public class MatrixCalculatorTest {
 		}
 		mtxB = new Matrix(arMtxB);
 		mtxC = new Matrix(arMtxC);
+		mtxD = new Matrix(arMtxD);
+		mtxE = new Matrix(arMtxE);
 	}
 
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void matrixNotInvertibleTest() {
+		Matrix inverse = mtxCalc.inverse(mtxD);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void secondMatrixNotInvertibleTest() {
+		Matrix inverse = mtxCalc.inverse(mtxE);
+	}
+	
 	@Test
 	public void inverseTest() {
 		double[][] correctInversed = { { -1, 3, 0 }, { -6, 19, 1 }, { 5, -15, -1 } };

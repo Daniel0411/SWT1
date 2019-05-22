@@ -60,7 +60,7 @@ public final class Matrix implements IMatrix {
     try {
     	return mtx[0].length;
     } catch(IndexOutOfBoundsException e) {
-    	throw new IndexOutOfBoundsException("Matrix isnt initialized yet!");
+    	throw new IndexOutOfBoundsException("Matrix isn't initialized yet!");
     }
   }
 
