@@ -30,8 +30,10 @@ public final class App {
 	private static final String CMD_OPTION_SAMPLES = "s";
 	private static final double LAMBDA_UPPER_LIMIT = 100;
 	private static final double LAMBDA_LOWER_LIMIT = 0;
-	private static final double SAMPLES_UPPER_LIMIT = 1000;
-	private static final double SAMPLES_LOWER_LIMIT = 1;
+	private static final double STANDARD_LAMBDA = 30;
+	private static final int SAMPLES_UPPER_LIMIT = 1000;
+	private static final int SAMPLES_LOWER_LIMIT = 1;
+	private static final int STANDARD_SAMPLES = 142;
 	private static final int PREFIX_LENGTH = 3;
 
 	public static void main(String[] args) {
@@ -47,14 +49,16 @@ public final class App {
 
 		String input = cmd.getOptionValue("input-images");
 		String output = cmd.getOptionValue("image-output");
-		double lambda = 30;
-		int samples = 142;
+		double lambda = STANDARD_LAMBDA;
+		int samples = STANDARD_SAMPLES;
 
+		// Set lambda and samples if given
 		if (cmd.hasOption("lambda")) {
 			try {
 				lambda = Double.parseDouble(cmd.getOptionValue("lamdba"));
 				if (lambda <= LAMBDA_LOWER_LIMIT || lambda > LAMBDA_UPPER_LIMIT) {
-					throw new IllegalArgumentException("lambda must be in (0,100]!");
+					throw new IllegalArgumentException(
+							"lambda must be in (" + LAMBDA_LOWER_LIMIT + "," + LAMBDA_UPPER_LIMIT + "]!");
 				}
 			} catch (NumberFormatException e) {
 				printErrorAndExit(e);
@@ -67,7 +71,8 @@ public final class App {
 			try {
 				samples = Integer.parseInt(cmd.getOptionValue("samples"));
 				if (samples < SAMPLES_LOWER_LIMIT || samples > SAMPLES_UPPER_LIMIT) {
-					throw new IllegalArgumentException("samples must be in [1,1000]!");
+					throw new IllegalArgumentException(
+							"samples must be in [" + SAMPLES_LOWER_LIMIT + "," + SAMPLES_UPPER_LIMIT + "]!");
 				}
 			} catch (NumberFormatException e) {
 				printErrorAndExit(e);
@@ -76,18 +81,22 @@ public final class App {
 			}
 		}
 
+		// Create the HDR Image and write it into the output directory.
 		EnhancedImage[] imageList = imageReader(new File(input));
 		HDrize hdrize = new HDrize();
 		MatrixCalculator mtxCalc = new MatrixCalculator();
-		BufferedImage resultImage = hdrize.createRGB(imageList, samples, lambda, mtxCalc, ToneMapping.SRGBGamma);
+		BufferedImage resultImage = hdrize.createRGB(imageList, samples, lambda, mtxCalc, ToneMapping.StandardGamma);
 
 		try {
-			ImageIO.write(resultImage, "png", new File(output + "/result.png"));
+			ImageIO.write(resultImage, "png", new File(output));
 		} catch (IOException e) {
 			printErrorAndExit(e);
 		}
 	}
 
+	/*
+	 * Reads all files in a directory and returns them as an array of EnhancedImages
+	 */
 	private static EnhancedImage[] imageReader(File input) {
 		File[] listOfFiles = input.listFiles();
 		EnhancedImage[] imageList = null;
@@ -108,6 +117,7 @@ public final class App {
 					throw new IllegalArgumentException(
 							"All image files must have a same prefix of at least 3 characters!");
 				}
+				inputStreamImage.close();
 			}
 		} catch (FileNotFoundException e) {
 			printErrorAndExit(e);
@@ -120,6 +130,7 @@ public final class App {
 		} catch (NullPointerException e) {
 			printErrorAndExit(e);
 		}
+
 		return imageList;
 	}
 
