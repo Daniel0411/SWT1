@@ -4,106 +4,87 @@ import org.iMage.HDrize.base.ICameraCurve;
 import org.iMage.HDrize.base.IHDRCombine;
 import org.iMage.HDrize.base.images.EnhancedImage;
 import org.iMage.HDrize.base.images.HDRImage;
-import org.iMage.HDrize.matrix.Matrix;
-import org.iMage.HDrize.matrix.MatrixCalculator;
 
 /**
  * Implementation of {@link IHDRCombine}.
  */
 public class HDRCombine implements IHDRCombine {
-	private float[] weight = calculateWeights();
 
-	@Override
-	public HDRImage createHDR(ICameraCurve curve, EnhancedImage[] imageList) {
-		int height = imageList[0].getHeight();
-		int width = imageList[0].getWidth();
-		double[][] red = new double[width][height];
-		double[][] green = new double[width][height];
-		double[][] blue = new double[width][height];
+  private static final int CHANNELS = 3;
 
-		for (int channel = 0; channel < 3; channel++) {
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
-					float hdrPixel = value(imageList, x, y, curve, channel) / norm(imageList, x, y, channel);
-					if (channel == 0) {
-						red[x][y] = hdrPixel;
-					} else if (channel == 1) {
-						green[x][y] = hdrPixel;
-					} else {
-						blue[x][y] = hdrPixel;
-					}
-				}
-			}
-		}
+  @Override
+  public HDRImage createHDR(ICameraCurve curve, EnhancedImage[] imageList) {
+    int width = imageList[0].getWidth();
+    int height = imageList[0].getHeight();
 
-		// transpose the rgb matrices
-		Matrix mtxR = new Matrix(red);
-		Matrix mtxG = new Matrix(green);
-		Matrix mtxB = new Matrix(blue);
+    float[][][] result = new float[][][] { //
+        new float[height][width], //
+        new float[height][width], //
+        new float[height][width]//
+    };
 
-		MatrixCalculator mtxCalc = new MatrixCalculator();
+    float[][][] numerator = new float[][][] { //
+        new float[height][width], //
+        new float[height][width], //
+        new float[height][width]//
+    };
 
-		mtxR = mtxCalc.transpose(mtxR);
-		mtxG = mtxCalc.transpose(mtxG);
-		mtxB = mtxCalc.transpose(mtxB);
+    float[][][] denominator = new float[][][] { //
+        new float[height][width], //
+        new float[height][width], //
+        new float[height][width]//
+    };
 
-		HDRImage hdrImage = new HDRImage(mtxToFloat(mtxR), mtxToFloat(mtxG), mtxToFloat(mtxB));
-		return hdrImage;
-	}
+    float[] w = this.calculateWeights();
 
-	/*
-	 * Transforms a matrix into a 2D array of floats
-	 */
-	private float[][] mtxToFloat(Matrix mtx) {
-		float[][] result = new float[mtx.rows()][mtx.cols()];
-		for (int i = 0; i < mtx.rows(); i++) {
-			for (int j = 0; j < mtx.cols(); j++) {
-				result[i][j] = (float) mtx.get(i, j);
-			}
-		}
-		return result;
-	}
+    for (EnhancedImage ei : imageList) {
+      float exposure = ei.getExposureTime();
 
-	/*
-	 * Calculates the value with the given formula
-	 */
-	private float value(EnhancedImage[] imageList, int x, int y, ICameraCurve curve, int channel) {
-		float value = 0;
-		for (int image = 0; image < 3; image++) {
-			int[] rgb = imageList[image].getRGB(x, y);
-			value = value
-					+ (weight[rgb[channel]] * curve.getResponse(rgb)[channel]) / imageList[image].getExposureTime();
-		}
-		return value;
-	}
+      for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+          int[] color = ei.getRGB(x, y);
+          float[] resp = curve.getResponse(color);
 
-	/*
-	 * Calculates the norm with the given formula
-	 */
-	private float norm(EnhancedImage[] imageList, int x, int y, int channel) {
-		float norm = 0;
-		for (int image = 0; image < 3; image++) {
-			int[] rgb = imageList[image].getRGB(x, y);
-			norm = norm + weight[rgb[channel]];
-		}
+          for (int c = 0; c < HDRCombine.CHANNELS; c++) {
+            numerator[c][y][x] += w[color[c]] * resp[c] / exposure;
+            denominator[c][y][x] += w[color[c]];
+          }
 
-		return norm;
-	}
+        }
+      }
 
-	@Override
-	public float[] calculateWeights() {
-		float[] weight = new float[256];
-		weight[0] = 1;
-		weight[255] = 1;
-		for (int i = 1; i < 20; i++) {
-			weight[i] = (float) (weight[(i - 1)] + 1.0 / 20.0);
-		}
-		for (int i = 254; i > 235; i--) {
-			weight[i] = (float) (weight[i + 1] + 1.0 / 20.0);
-		}
-		for (int i = 20; i < 236; i++) {
-			weight[i] = 2;
-		}
-		return weight;
-	}
+    }
+
+    for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
+        for (int c = 0; c < HDRCombine.CHANNELS; c++) {
+          result[c][y][x] = numerator[c][y][x] / denominator[c][y][x];
+        }
+      }
+    }
+
+    return new HDRImage(result[0], result[1], result[2]);
+  }
+
+  @Override
+  public float[] calculateWeights() {
+    final int offset = 20;
+
+    float[] weight = new float[256];
+    weight[0] = 1f;
+
+    for (int a = 1; a < offset; a++) {
+      weight[a] = (float) (weight[a - 1] + (1.0 / offset));
+    }
+    for (int a = offset; a < (256 - offset); a++) {
+      weight[a] = 2;
+    }
+
+    for (int a = 256 - offset; a < 256; a++) {
+      weight[a] = weight[256 - a - 1];
+    }
+
+    return weight;
+  }
+
 }

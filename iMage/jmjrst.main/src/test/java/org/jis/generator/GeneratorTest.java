@@ -1,159 +1,263 @@
 package org.jis.generator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import javax.imageio.ImageIO;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.imageio.*;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import static org.junit.Assert.*;
+
 /**
- * Test class for Generator
- * 
- * @author Daniel Vollmer
- *
+ * Sommersemester 2019 - Übungsblatt 1 - Aufgabe 2
  */
 public class GeneratorTest {
+  /**
+   * Class under test.
+   */
+  private Generator generator;
 
-	private Generator generator;
-	private BufferedImage image;
-	private BufferedImage rotatedImage;
-	private String testImageName = "image";
+  private int imageHeight, imageWidth;
+  private static final File TEST_DIR = new File("target/test");
+  private static final String IMAGE_FILE = "/image.jpg";
+  private String imageName;
 
-	@BeforeClass
-	public static void setUpClass() {
-		File dir = new File("target/test");
-		dir.mkdir();
-	}
+  /**
+   * Input for test cases
+   */
+  private BufferedImage testImage;
+  /**
+   * Metadata for saving the image
+   */
+  private IIOMetadata imeta;
+  /**
+   * output from test cases
+   */
+  private BufferedImage rotatedImageTestResult;
 
-	@Before
-	public void setUp() throws Exception {
-		generator = new Generator(null, 0);
-		image = ImageIO.read(this.getClass().getResourceAsStream("/" + testImageName + ".jpg"));
-	}
+  /**
+   * Aufgabe 2 h) Teil 1: Sicherstellen, dass das Ausgabeverzeichnis existiert und leer ist.
+   */
+  @BeforeClass
+  public static void beforeClass() {
+    if (TEST_DIR.exists()) {
+      for (File f : TEST_DIR.listFiles()) {
+        f.delete();
+      }
+    } else {
+      TEST_DIR.mkdirs();
+    }
+  }
 
-	@After
-	public void tearDown() throws Exception {
-		java.util.Date time = Calendar.getInstance().getTime();
-		SimpleDateFormat formatter = new SimpleDateFormat("MM-dd_HH.mm.ss.SSS");
-		String date = formatter.format(time);
-		if (rotatedImage != null) {
-			String imageFullName = testImageName + "_rotated_" + date;
-			File outputfile = new File("target/test/" + imageFullName + ".jpg");
-			ImageIO.write(rotatedImage, "jpg", outputfile);
-		}
-	}
+  /**
+   * Aufgabe 2 c)
+   * 
+   */
+  @Before
+  public void setUp() {
+    this.generator = new Generator(null, 0);
 
-	@Test
-	public void noRotationTest() {
-		rotatedImage = generator.rotateImage(image, 0.0);
-		assertEquals(rotatedImage, image);
-	}
+    this.testImage = null;
+    this.imeta = null;
+    this.rotatedImageTestResult = null;
+    
+    final URL imageResource = this.getClass().getResource(IMAGE_FILE);
+    imageName = extractFileNameWithoutExtension(new File(imageResource.getFile()));
+   
+    try (ImageInputStream iis = ImageIO.createImageInputStream(imageResource.openStream())) {
+      ImageReader reader = ImageIO.getImageReadersByFormatName("jpg").next();
+      reader.setInput(iis, true);
+      ImageReadParam params = reader.getDefaultReadParam();
+      this.testImage = reader.read(0, params);
+      this.imageHeight = this.testImage.getHeight();
+      this.imageWidth = this.testImage.getWidth();
+      this.imeta = reader.getImageMetadata(0);
+      reader.dispose();
+    } catch (IOException e) {
+      fail(e.getMessage());
+    }
+  }
 
-	@Test
-	public void nullImageTest() {
-		assertNull(generator.rotateImage(null, 0.0));
-	}
+  private String extractFileNameWithoutExtension(File file) {
+    String fileName = file.getName();
+    if (fileName.indexOf(".") > 0) {
+      return fileName.substring(0, fileName.lastIndexOf("."));
+    } else {
+      return fileName;
+    }
+  }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void rotateImageNotMultipleOf90Test() {
-		generator.rotateImage(image, 0.42);
-	}
+  /**
+   * Aufgabe 2 h) Teil 2: Automatisches Speichern von testImage.
+   */
+  @After
+  public void tearDown() {
+    SimpleDateFormat sdf = new SimpleDateFormat("MM-dd_HH.mm.ss.SSS");
+    String time = sdf.format(new Date());
 
-	@Test
-	public void rotateImageBy90DegreeTest() {
-		rotatedImage = generator.rotateImage(image, Math.toRadians(90));
+    File outputFile = new File(
+        MessageFormat.format("{0}/{1}_rotated_{2}.jpg", TEST_DIR, imageName, time));
 
-		assertEquals(image.getHeight(), rotatedImage.getWidth());
-		assertEquals(image.getWidth(), rotatedImage.getHeight());
+    if (this.rotatedImageTestResult != null) {
+      try (FileOutputStream fos = new FileOutputStream(outputFile);
+           ImageOutputStream ios = ImageIO.createImageOutputStream(fos)) {
+        ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
+        writer.setOutput(ios);
 
-		boolean sameImage = true;
+        ImageWriteParam iwparam = new JPEGImageWriteParam(Locale.getDefault());
+        iwparam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT); // mode explicit necessary
 
-		int width = image.getWidth();
-		int height = image.getHeight();
+        // set JPEG Quality
+        iwparam.setCompressionQuality(1f);
+        writer.write(this.imeta, new IIOImage(this.rotatedImageTestResult, null, null), iwparam);
+        writer.dispose();
+      } catch (IOException e) {
+        fail();
+      }
+    }
+  }
 
-		try {
-			for (int y = 0; y < height; y++) {
-				for (int x = 0; x < width; x++) {
-					if (image.getRGB(x, y) != rotatedImage.getRGB(height - 1 - y, x)) {
-						sameImage = false;
-						break;
-					}
-				}
-			}
-		} catch (IndexOutOfBoundsException e) {
-			fail("Error, height or width of rotated image is not correct!");
-		}
-		assertTrue(sameImage);
-	}
+  /**
+   * Aufgabe 2 d) Teil 1
+   */
+  @Test
+  public void testRotateImage_RotateImage0() {
+    this.rotatedImageTestResult = this.generator.rotateImage(this.testImage, 0);
 
-	@Test
-	public void rotateImageBy270DegreeTest() {
-		rotatedImage = generator.rotateImage(image, Math.toRadians(270));
-		assertEquals(image.getHeight(), rotatedImage.getWidth());
-		assertEquals(image.getWidth(), rotatedImage.getHeight());
+    assertTrue(imageEquals(this.testImage, this.rotatedImageTestResult));
+  }
 
-		boolean sameImage = true;
+  /**
+   * Aufgabe 2 d) Teil 2
+   */
+  @Test
+  public void testRotateImage_RotateNull0() {
+    this.rotatedImageTestResult = this.generator.rotateImage(null, 0);
 
-		int width = image.getWidth();
-		int height = image.getHeight();
-		try {
-			for (int y = 0; y < height; y++) {
-				for (int x = 0; x < width; x++) {
-					if (image.getRGB(x, y) != rotatedImage.getRGB(y, width - 1 - x)) {
-						sameImage = false;
-						break;
-					}
-				}
-			}
-		} catch (IndexOutOfBoundsException e) {
-			fail("Error, height or width of rotated image is not correct!");
-		}
-		assertTrue(sameImage);
-	}
+    assertNull(this.rotatedImageTestResult);
+  }
 
-	@Test
-	public void rotateImageByMinus90DegreeTest() {
-		rotatedImage = generator.rotateImage(image, Math.toRadians(-90));
-		assertEquals(image.getHeight(), rotatedImage.getWidth());
-		assertEquals(image.getWidth(), rotatedImage.getHeight());
-		assertTrue(compareImages(rotatedImage, generator.rotateImage(image, Math.toRadians(270))));
-	}
+  /**
+   * Aufgabe 2 e)
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testRotateImage_Rotate042() {
+    this.generator.rotateImage(this.testImage, 0.42);
+  }
 
-	@Test
-	public void rotateImageByMinus270DegreeTest() {
-		rotatedImage = generator.rotateImage(image, Math.toRadians(-270));
-		assertEquals(image.getHeight(), rotatedImage.getWidth());
-		assertEquals(image.getWidth(), rotatedImage.getHeight());
-		assertTrue(compareImages(rotatedImage, generator.rotateImage(image, Math.toRadians(90))));
-	}
+  /**
+   * Aufgabe 2 f) Teil 1
+   */
+  @Test
+  public void testRotateImage_Rotate90() {
+    this.rotatedImageTestResult = this.generator.rotateImage(this.testImage, Generator.ROTATE_90);
 
-	// Compares each pixel of two images. Returns true if the color of all pixel are
-	// the same else false.
-	public static boolean compareImages(BufferedImage imageA, BufferedImage imageB) {
-		if (imageA.getWidth() != imageB.getWidth() || imageA.getHeight() != imageB.getHeight()) {
-			return false;
-		}
+    assertEquals(this.testImage.getHeight(), this.rotatedImageTestResult.getWidth());
+    assertEquals(this.testImage.getWidth(), this.rotatedImageTestResult.getHeight());
 
-		int width = imageA.getWidth();
-		int height = imageA.getHeight();
+    for (int i = 0; i < this.imageHeight; i++) {
+      for (int j = 0; j < this.imageWidth; j++) {
+        assertEquals(this.testImage.getRGB(j, i), this.rotatedImageTestResult.getRGB(this.imageHeight - 1 - i, j));
+      }
+    }
+  }
 
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				if (imageA.getRGB(x, y) != imageB.getRGB(x, y)) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+  /**
+   * Aufgabe 2 f) Teil 2
+   */
+  @Test
+  public void testRotateImage_Rotate270() {
+    this.rotatedImageTestResult = this.generator.rotateImage(this.testImage, Generator.ROTATE_270);
+
+    assertEquals(this.testImage.getHeight(), this.rotatedImageTestResult.getWidth());
+    assertEquals(this.testImage.getWidth(), this.rotatedImageTestResult.getHeight());
+
+    for (int i = 0; i < this.imageHeight; i++) {
+      for (int j = 0; j < this.imageWidth; j++) {
+        assertEquals(this.testImage.getRGB(j, i), this.rotatedImageTestResult.getRGB(i, this.imageWidth - 1 - j));
+      }
+    }
+  }
+
+  /**
+   * Aufgabe 2 g).1
+   */
+  @Test
+  public void testRotateImage_RotateM90() {
+    this.rotatedImageTestResult = this.generator.rotateImage(this.testImage, Math.toRadians(-90));
+
+    assertEquals(this.testImage.getHeight(), this.rotatedImageTestResult.getWidth());
+    assertEquals(this.testImage.getWidth(), this.rotatedImageTestResult.getHeight());
+
+    for (int i = 0; i < this.imageHeight; i++) {
+      for (int j = 0; j < this.imageWidth; j++) {
+        assertEquals(this.testImage.getRGB(j, i), this.rotatedImageTestResult.getRGB(i, this.imageWidth - 1 - j));
+      }
+    }
+  }
+
+  /**
+   * Aufgabe 2 g).2
+   */
+  @Test
+  public void testRotateImage_RotateM270() {
+    this.rotatedImageTestResult = this.generator.rotateImage(this.testImage, Math.toRadians(-270));
+
+    assertEquals(this.testImage.getHeight(), this.rotatedImageTestResult.getWidth());
+    assertEquals(this.testImage.getWidth(), this.rotatedImageTestResult.getHeight());
+
+    for (int i = 0; i < this.imageHeight; i++) {
+      for (int j = 0; j < this.imageWidth; j++) {
+        assertEquals(this.testImage.getRGB(j, i), this.rotatedImageTestResult.getRGB(this.imageHeight - 1 - i, j));
+      }
+    }
+  }
+
+  /**
+   * Check if two images are identical - pixel wise.
+   * 
+   * @param expected
+   *          the expected image
+   * @param actual
+   *          the actual image
+   * @return true if images are equal, false otherwise.
+   */
+  protected static boolean imageEquals(BufferedImage expected, BufferedImage actual) {
+    if (expected == null || actual == null) {
+      return false;
+    }
+
+    if (expected.getHeight() != actual.getHeight()) {
+      return false;
+    }
+
+    if (expected.getWidth() != actual.getWidth()) {
+      return false;
+    }
+
+    for (int i = 0; i < expected.getHeight(); i++) {
+      for (int j = 0; j < expected.getWidth(); j++) {
+        if (expected.getRGB(j, i) != actual.getRGB(j, i)) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
 }
