@@ -82,7 +82,7 @@ public class MenuListner implements ActionListener {
     else if (menu.plugins.contains(e.getSource())) {
     	ArrayList<PluginForJmjrst> plugins = (ArrayList<PluginForJmjrst>) PluginManagement.getPlugins();
     	for (PluginForJmjrst plugin : plugins) {
-    		if(plugin.getName().equals(e.getSource().toString())) {
+    		if(plugin.getName().equals(e.getActionCommand())) {
     			plugin.run();
     		}
     	}
