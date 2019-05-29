@@ -22,10 +22,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
+import org.iMage.plugins.PluginForJmjrst;
+import org.iMage.plugins.PluginManagement;
 import org.jis.Main;
 import org.jis.options.Options;
 import org.jis.view.Menu;
@@ -75,6 +78,14 @@ public class MenuListner implements ActionListener {
     {
       new AboutBox(m);
       System.gc();
+    }
+    else if (menu.plugins.contains(e.getSource())) {
+    	ArrayList<PluginForJmjrst> plugins = (ArrayList<PluginForJmjrst>) PluginManagement.getPlugins();
+    	for (PluginForJmjrst plugin : plugins) {
+    		if(plugin.getName().equals(e.getSource().toString())) {
+    			plugin.run();
+    		}
+    	}
     }
     else if (e.getSource() == menu.gener || e.getSource() == m.toolBar.gener) m.generator.generate(false);
     else if (e.getSource() == menu.zippen || e.getSource() == m.toolBar.zippen) m.generator.generate(true);

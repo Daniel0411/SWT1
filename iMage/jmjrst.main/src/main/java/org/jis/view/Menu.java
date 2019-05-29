@@ -16,6 +16,7 @@
 package org.jis.view;
 
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -23,6 +24,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.UIManager;
 
+import org.iMage.plugins.PluginForJmjrst;
+import org.iMage.plugins.PluginManagement;
 import org.jis.Main;
 import org.jis.listner.MenuListner;
 
@@ -49,7 +52,8 @@ public class Menu extends JMenuBar {
   public JMenuItem          look_motif;
   public JMenuItem          look_gtk;
   public JMenuItem          update_check;
-
+  public ArrayList<JMenuItem> plugins;
+  
   /**
    * @param m
    *          a reference to the Main class
@@ -105,6 +109,9 @@ public class Menu extends JMenuBar {
     zippen.setEnabled(false);
     gallerie.setEnabled(false);
 
+    MenuListner al = new MenuListner(m, this);
+    plugins = addPluginsToMenus(startPlugIn, configurePlugIn, al);
+    
     datei.add(gener);
     datei.add(zippen);
     datei.add(gallerie);
@@ -122,7 +129,6 @@ public class Menu extends JMenuBar {
     this.add(option);
     this.add(about);
 
-    MenuListner al = new MenuListner(m, this);
     exit.addActionListener(al);
     gener.addActionListener(al);
     zippen.addActionListener(al);
@@ -153,6 +159,21 @@ public class Menu extends JMenuBar {
       if (uii[i].toString().substring(uii[i].toString().lastIndexOf(" ") + 1, uii[i].toString().lastIndexOf("]")) //$NON-NLS-1$ //$NON-NLS-2$
           .equalsIgnoreCase("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel")) optionen_look.add(look_nimbus); //$NON-NLS-1$
     }
+  }
+  
+  private ArrayList<JMenuItem> addPluginsToMenus(JMenu start, JMenu configure, MenuListner al) {
+	  ArrayList<PluginForJmjrst> plugins = (ArrayList<PluginForJmjrst>) PluginManagement.getPlugins();
+	  ArrayList<JMenuItem> items = new ArrayList<JMenuItem>();
+	  for(PluginForJmjrst plugin : plugins) {
+		  JMenuItem item = new JMenuItem(plugin.getName());
+		  item.addActionListener(al);
+		  items.add(item);
+		  start.add(item);
+		  if(plugin.isConfigurable()) {
+			  configure.add(item);
+		  }
+	  }
+	  return items;
   }
 
 }
