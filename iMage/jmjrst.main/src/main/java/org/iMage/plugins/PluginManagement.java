@@ -1,6 +1,7 @@
 package org.iMage.plugins;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ServiceLoader;
 
 /**
@@ -27,11 +28,10 @@ public final class PluginManagement {
 	 */
 	public static Iterable<PluginForJmjrst> getPlugins() {
 		ArrayList<PluginForJmjrst> al = new ArrayList<PluginForJmjrst>();
-
 		ServiceLoader.load(PluginForJmjrst.class).forEach(plugin -> {
 			al.add(plugin);
 		});
-		al.sort(null);
+		Collections.sort(al);
 		return al;
 	}
 }

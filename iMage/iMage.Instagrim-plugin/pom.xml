@@ -14,6 +14,10 @@
 			<artifactId>jmjrst.main</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+  			<groupId>org.kohsuke.metainf-services</groupId>
+  			<artifactId>metainf-services</artifactId>
+ 			 <optional>true</optional>
+		</dependency>
 	</dependencies>
-	<groupId>swt1</groupId>
 </project>
