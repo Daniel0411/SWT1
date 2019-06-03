@@ -7,7 +7,6 @@
 		<artifactId>iMage</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>iMage.Instagrim-plugin</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>swt1</groupId>
@@ -20,4 +19,6 @@
  			 <optional>true</optional>
 		</dependency>
 	</dependencies>
+	<artifactId>iMage.InstagrimPlugin</artifactId>
+	<groupId>swt1</groupId>
 </project>

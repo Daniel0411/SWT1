@@ -62,6 +62,7 @@ public class HDrizeTest extends TestBase {
    *           iff image could not be read.
    */
   @Test
+  @Ignore
   public void smallImageWorkflowA() throws IOException {
     var hdr = this.hdrize.createHDR(this.images, 24, 20, new MatrixCalculator());
     Assert.assertNotNull(hdr);
@@ -79,6 +80,7 @@ public class HDrizeTest extends TestBase {
    *           iff loading of curve was not possible
    */
   @Test
+  @Ignore
   public void smallImageWorkflowB() throws IOException, ClassNotFoundException {
     CameraCurve cc = new CameraCurve(this.getClass().getResourceAsStream("/curve-24-20.0.bin"));
     var hdr = this.hdrize.createHDR(this.images, cc);
