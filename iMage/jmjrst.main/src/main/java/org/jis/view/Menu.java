@@ -63,8 +63,8 @@ public class Menu extends JMenuBar {
 		JMenu option = new JMenu(m.mes.getString("Menu.1"));
 		JMenu optionen_look = new JMenu(m.mes.getString("Menu.2"));
 		JMenu about = new JMenu(m.mes.getString("Menu.3"));
-		JMenu startPlugIn = new JMenu(m.mes.getString("Menu.17"));
-		JMenu configurePlugIn = new JMenu(m.mes.getString("Menu.18"));
+		JMenu startPlugIn = new JMenu(m.mes.getString("Menu.StartPlugIn"));
+		JMenu configurePlugIn = new JMenu(m.mes.getString("Menu.ConfigurePlugIn"));
 
 		gener = new JMenuItem(m.mes.getString("Menu.4"));
 		URL url = ClassLoader.getSystemResource("icons/media-playback-start.png");
@@ -109,7 +109,7 @@ public class Menu extends JMenuBar {
 		gallerie.setEnabled(false);
 
 		MenuListner al = new MenuListner(m, this);
-		addPluginsToMenus(startPlugIn, configurePlugIn);
+		addPluginsToMenus(startPlugIn, configurePlugIn, m);
 
 		datei.add(gener);
 		datei.add(zippen);
@@ -165,8 +165,9 @@ public class Menu extends JMenuBar {
 		}
 	}
 
-	private void addPluginsToMenus(JMenu start, JMenu configure) {
+	private void addPluginsToMenus(JMenu start, JMenu configure, Main main) {
 		for (PluginForJmjrst plugin : PluginManagement.getPlugins()) {
+			plugin.init(main);
 			JMenuItem itemRun = new JMenuItem(plugin.getName());
 			JMenuItem itemConfig = new JMenuItem(plugin.getName());
 			itemRun.addActionListener(actionEvent -> plugin.run());

@@ -1,16 +1,25 @@
 package org.iMage.instagrimPlugin;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
 import java.util.Random;
+
+import javax.swing.JDialog;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
 
 import org.iMage.plugins.PluginForJmjrst;
 import org.jis.Main;
 import org.kohsuke.MetaInfServices;
+
 
 @MetaInfServices
 public class InstagrimPlugin extends PluginForJmjrst {
 
 	private final String NAME = "Instagrim-Plugin";
 	private final boolean IS_CONFIGURABLE = true;
+	
+	private Main main;
 	private String[] comments = { "Wow, scharfes Pic. Mit iMage erstellt?",
 			"Wusste gar nicht, dass sowas mit iMage möglich ist. Voll krasse Farben." };
 
@@ -25,6 +34,7 @@ public class InstagrimPlugin extends PluginForJmjrst {
 		System.out.println(
 				"iMage: Der Bildverschönerer, dem Influencer vertrauen! Jetzt bist auch Du Teil unseres Teams, "
 						+ userName);
+		this.main = main;
 	}
 
 	@Override
@@ -41,7 +51,16 @@ public class InstagrimPlugin extends PluginForJmjrst {
 
 	@Override
 	public void configure() {
-		// TODO Auto-generated method stub
+		    JDialog dialog = new JDialog(main, NAME);
+		    JList<String> list = new JList<String>(comments);
+		    JScrollPane scrollPane = new JScrollPane(list);
+
+		    Container contentPane = dialog.getContentPane();
+		    contentPane.add(scrollPane, BorderLayout.CENTER);
+		    
+		    dialog.pack();
+		    dialog.setLocationRelativeTo(main);
+		    dialog.setVisible(true);
 
 	}
 
