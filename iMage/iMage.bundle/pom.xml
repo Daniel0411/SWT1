@@ -54,4 +54,5 @@
 			</plugin>
 		</plugins>
 	</build>
+	<groupId>swt1</groupId>
 </project>
