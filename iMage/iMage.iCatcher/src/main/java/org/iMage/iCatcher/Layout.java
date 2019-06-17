@@ -8,10 +8,14 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
@@ -27,6 +31,8 @@ import org.iMage.HDrize.base.images.HDRImageIO.ToneMapping;
 
 public class Layout {
 
+	private Controller controller = new Controller();
+	
 	private JLabel previewImage = new JLabel();
 	private JLabel cameraCurveLabel = new JLabel("CameraCurve");
 	private JLabel toneMappingLabel = new JLabel("Tone Mapping");
@@ -48,6 +54,18 @@ public class Layout {
 	private JComboBox<ToneMapping> toneMappingBox;
 	private JComboBox<String> cameraCurveBox;
 
+	public Layout() {
+		resultImage.addActionListener(controller::enlargeResultImage);
+		loadDIR.addActionListener(controller::loadDIR);
+		loadCurve.addActionListener(controller::loadCurve);
+		runHDrize.addActionListener(controller::runHDrize);
+		saveHDR.addActionListener(controller::saveHDR);
+		saveCurve.addActionListener(controller::saveCurve);
+		showCurve.addActionListener(controller::showCurve);
+		lambda.addActionListener(controller::lambda);
+		samples.addChangeListener(controller::samples);
+	}
+	
 	public JPanel buildGUI() {
 		JPanel rootPanel = new JPanel();
 		JPanel topPart = buildTopPart();
@@ -89,10 +107,6 @@ public class Layout {
 
 		return panel;
 	}
-
-	//public void generateHdr(ActionEvent ae) {
-		
-	//}
 	
 	private JPanel buildTopRightQuadrant() {
 		JPanel panel = new JPanel(new GridBagLayout());
@@ -102,9 +116,6 @@ public class Layout {
 		gbc.insets = new Insets(0, 0, 5, 0);
 		resultImage.setPreferredSize(new Dimension(350, 250));
 		panel.add(resultImage, gbc);
-		
-		
-		//resultImage.addActionListener(controller::generateHdr);
 
 		gbc = createGridBagConstraints(0, 1, 1, 1, 1, 0);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -273,4 +284,41 @@ public class Layout {
 
 		return gbc;
 	}
+	
+	public static void showError(String message) {
+		JOptionPane.showMessageDialog(null, message);
+	}
+	
+	public static File loadDirDialog() {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Load DIR");
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		
+		int returnValue = fileChooser.showOpenDialog(null);
+		File path = null;
+		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			path = new File(fileChooser.getSelectedFile().getAbsolutePath());
+		}
+		
+		return path;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
