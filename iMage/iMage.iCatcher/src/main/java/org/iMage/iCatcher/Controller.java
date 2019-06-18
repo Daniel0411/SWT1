@@ -27,7 +27,12 @@ public class Controller {
 	 * @param ae ActionEvent
 	 */
 	public void enlargeResultImage(ActionEvent ae) {
-
+		if (model.getHDRImage() == null) {
+			view.showError("You have to create a HDR Image before you can enlarge it!");
+			return;
+		}
+		view.showImageLarge(model.getHDRImage());
+		
 	}
 
 	/**
@@ -103,7 +108,6 @@ public class Controller {
 		
 		try {
 			String fileEnding = path.getName().substring(path.getName().length() -3, path.getName().length());
-			System.out.println(fileEnding);
 			if(!fileEnding.equals("png")) {
 				view.showError("The HDR image can only be saved as a png file!");
 				return;

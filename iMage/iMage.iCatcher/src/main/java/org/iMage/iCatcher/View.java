@@ -8,6 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -15,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -26,7 +28,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.text.Document;
 
 import org.iMage.HDrize.base.images.HDRImageIO.ToneMapping;
@@ -34,9 +35,9 @@ import org.iMage.HDrize.base.images.HDRImageIO.ToneMapping;
 public class View {
 
 	private Controller controller = new Controller(this);
-	
+
 	JPanel rootPanel = new JPanel();
-	
+
 	private JLabel previewImageLabel = new JLabel();
 	private JLabel cameraCurveLabel = new JLabel("CameraCurve");
 	private JLabel toneMappingLabel = new JLabel("Tone Mapping");
@@ -55,8 +56,9 @@ public class View {
 
 	private JTextField lambda = new JTextField("30", 9);
 
-	private JScrollPane scrollPane = new JScrollPane(previewImageLabel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-	
+	private JScrollPane scrollPane = new JScrollPane(previewImageLabel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+			JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
 	private JComboBox<ToneMapping> toneMappingBox;
 	private JComboBox<CameraCurveEnum> cameraCurveBox = new JComboBox<>();
 
@@ -69,7 +71,7 @@ public class View {
 		saveCurve.addActionListener(controller::saveCurve);
 		showCurve.addActionListener(controller::showCurve);
 	}
-	
+
 	public JPanel buildGUI() {
 		JPanel topPart = buildTopPart();
 		JPanel bottomPart = buildBottomPart();
@@ -109,7 +111,7 @@ public class View {
 
 		return panel;
 	}
-	
+
 	private JPanel buildTopRightQuadrant() {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc;
@@ -285,15 +287,15 @@ public class View {
 
 		return gbc;
 	}
-	
+
 	/**
 	 * 
-	 * @param message 
+	 * @param message
 	 */
 	public void showError(String message) {
 		JOptionPane.showMessageDialog(null, message);
 	}
-	
+
 	/**
 	 * 
 	 * @return FileChooser
@@ -309,7 +311,7 @@ public class View {
 		}
 		return path;
 	}
-	
+
 	public File savePNG(Image image) {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Save HDR Image");
@@ -320,49 +322,53 @@ public class View {
 		}
 		return path;
 	}
-	
+
+	public void showImageLarge(Image image) {
+		JFrame imageFrame = new JFrame();
+		JLabel imageLabel = new JLabel();
+		JScrollPane scrollPane = new JScrollPane(imageLabel);
+		imageLabel.setIcon(new ImageIcon(image));
+		
+		int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
+		int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+		int imageHeight = image.getHeight(null);
+		int imageWidth = image.getWidth(null);
+		
+		if(imageHeight >= screenHeight * 0.8 || imageWidth >= screenWidth * 0.8 ) {
+			imageFrame.setSize((int) Math.floor(screenWidth * 0.8), (int) Math.floor(screenHeight * 0.8));
+		} else {
+			imageFrame.setSize(imageWidth, imageHeight);
+		}
+		imageFrame.setResizable(false);
+		imageFrame.add(scrollPane);
+		imageFrame.setVisible(true);
+	}
+
 	public void setPreviewImage(Image previewImage) {
-		Image scaledPreviewImage = previewImage.getScaledInstance(-1, scrollPane.getViewportBorderBounds().height, BufferedImage.SCALE_SMOOTH);
+		Image scaledPreviewImage = previewImage.getScaledInstance(-1, scrollPane.getViewportBorderBounds().height,
+				BufferedImage.SCALE_SMOOTH);
 		previewImageLabel.setIcon(new ImageIcon(scaledPreviewImage));
 	}
-	
+
 	public void setResultImage(Image image) {
-		Image scaledImage = image.getScaledInstance(resultImage.getWidth(), resultImage.getHeight(), BufferedImage.SCALE_SMOOTH);
+		Image scaledImage = image.getScaledInstance(resultImage.getWidth(), resultImage.getHeight(),
+				BufferedImage.SCALE_SMOOTH);
 		resultImage.setIcon(new ImageIcon(scaledImage));
 	}
-	
+
 	public CameraCurveEnum getCameraCurve() {
 		return cameraCurveBox.getItemAt(cameraCurveBox.getSelectedIndex());
 	}
-	
+
 	public ToneMapping getToneMapping() {
 		return toneMappingBox.getItemAt(toneMappingBox.getSelectedIndex());
 	}
-	
+
 	public int getSamples() {
 		return samples.getValue();
 	}
-	
+
 	public String getLambda() {
 		return lambda.getText();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
