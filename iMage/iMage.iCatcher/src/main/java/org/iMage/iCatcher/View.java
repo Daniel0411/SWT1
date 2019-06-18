@@ -6,13 +6,14 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -25,15 +26,18 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.text.Document;
 
 import org.iMage.HDrize.base.images.HDRImageIO.ToneMapping;
 
-public class Layout {
+public class View {
 
-	private Controller controller = new Controller();
+	private Controller controller = new Controller(this);
 	
-	private JLabel previewImage = new JLabel();
+	JPanel rootPanel = new JPanel();
+	
+	private JLabel previewImageLabel = new JLabel();
 	private JLabel cameraCurveLabel = new JLabel("CameraCurve");
 	private JLabel toneMappingLabel = new JLabel("Tone Mapping");
 	private JLabel lambdaLabel = new JLabel("Lambda");
@@ -51,10 +55,12 @@ public class Layout {
 
 	private JTextField lambda = new JTextField("30", 9);
 
+	private JScrollPane scrollPane = new JScrollPane(previewImageLabel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+	
 	private JComboBox<ToneMapping> toneMappingBox;
-	private JComboBox<String> cameraCurveBox;
+	private JComboBox<CameraCurveEnum> cameraCurveBox = new JComboBox<>();
 
-	public Layout() {
+	public View() {
 		resultImage.addActionListener(controller::enlargeResultImage);
 		loadDIR.addActionListener(controller::loadDIR);
 		loadCurve.addActionListener(controller::loadCurve);
@@ -62,12 +68,9 @@ public class Layout {
 		saveHDR.addActionListener(controller::saveHDR);
 		saveCurve.addActionListener(controller::saveCurve);
 		showCurve.addActionListener(controller::showCurve);
-		lambda.addActionListener(controller::lambda);
-		samples.addChangeListener(controller::samples);
 	}
 	
 	public JPanel buildGUI() {
-		JPanel rootPanel = new JPanel();
 		JPanel topPart = buildTopPart();
 		JPanel bottomPart = buildBottomPart();
 		rootPanel.setLayout(new BorderLayout(10, 10));
@@ -97,7 +100,6 @@ public class Layout {
 
 		gbc = createGridBagConstraints(0, 0, 1, 1, 0, 0);
 		gbc.insets = new Insets(0, 0, 10, 0);
-		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setPreferredSize(new Dimension(350, 250));
 		panel.add(scrollPane, gbc);
 
@@ -156,8 +158,7 @@ public class Layout {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		panel.add(cameraCurveLabel, gbc);
 
-		String[] cameraCurveBoxString = { "Standard Curve", "Calculated Curve", "Loaded Curve" };
-		cameraCurveBox = new JComboBox<String>(cameraCurveBoxString);
+		cameraCurveBox = new JComboBox<>(CameraCurveEnum.values());
 		gbc = createGridBagConstraints(0, 1, 1, 1, 1, 0);
 		gbc.insets = new Insets(0, 0, 10, 0);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -167,7 +168,7 @@ public class Layout {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		panel.add(toneMappingLabel, gbc);
 
-		toneMappingBox = new JComboBox<ToneMapping>(ToneMapping.values());
+		toneMappingBox = new JComboBox<>(ToneMapping.values());
 		toneMappingBox.setSelectedItem(ToneMapping.StandardGamma);
 		gbc = createGridBagConstraints(0, 3, 1, 1, 1, 0);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -285,22 +286,65 @@ public class Layout {
 		return gbc;
 	}
 	
-	public static void showError(String message) {
+	/**
+	 * 
+	 * @param message 
+	 */
+	public void showError(String message) {
 		JOptionPane.showMessageDialog(null, message);
 	}
 	
-	public static File loadDirDialog() {
+	/**
+	 * 
+	 * @return FileChooser
+	 */
+	public File selectDirPath() {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Load DIR");
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		
 		int returnValue = fileChooser.showOpenDialog(null);
 		File path = null;
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			path = new File(fileChooser.getSelectedFile().getAbsolutePath());
 		}
-		
 		return path;
+	}
+	
+	public File savePNG(Image image) {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Save HDR Image");
+		int returnValue = fileChooser.showSaveDialog(null);
+		File path = null;
+		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			path = new File(fileChooser.getSelectedFile().getAbsolutePath());
+		}
+		return path;
+	}
+	
+	public void setPreviewImage(Image previewImage) {
+		Image scaledPreviewImage = previewImage.getScaledInstance(-1, scrollPane.getViewportBorderBounds().height, BufferedImage.SCALE_SMOOTH);
+		previewImageLabel.setIcon(new ImageIcon(scaledPreviewImage));
+	}
+	
+	public void setResultImage(Image image) {
+		Image scaledImage = image.getScaledInstance(resultImage.getWidth(), resultImage.getHeight(), BufferedImage.SCALE_SMOOTH);
+		resultImage.setIcon(new ImageIcon(scaledImage));
+	}
+	
+	public CameraCurveEnum getCameraCurve() {
+		return cameraCurveBox.getItemAt(cameraCurveBox.getSelectedIndex());
+	}
+	
+	public ToneMapping getToneMapping() {
+		return toneMappingBox.getItemAt(toneMappingBox.getSelectedIndex());
+	}
+	
+	public int getSamples() {
+		return samples.getValue();
+	}
+	
+	public String getLambda() {
+		return lambda.getText();
 	}
 }
 
