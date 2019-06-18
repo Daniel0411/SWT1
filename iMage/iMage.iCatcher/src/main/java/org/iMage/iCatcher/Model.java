@@ -28,8 +28,8 @@ public class Model {
 
 	public static final double STANDARD_LAMBDA = 30;
 	public static final int STANDARD_SAMPLES = 142;
-	
-	private List<File> inputImagesPaths;
+
+	private List<File> inputImagesPaths = null;
 	private Image previewImage = null;
 	private CameraCurveEnum cameraCurveType;
 	private CameraCurve cameraCurve;
@@ -73,15 +73,37 @@ public class Model {
 	public Image getPreviewImage() {
 		return previewImage;
 	}
-	
+
 	public BufferedImage getHDRImage() {
 		return hdrImage;
+	}
+
+	public String getLongestCommonPrefix() {
+		if (inputImagesPaths == null) {
+			throw new IllegalArgumentException("You have to select a directory first!");
+		}
+
+		String[] fileNames = new String[inputImagesPaths.size()];
+		for (int i = 0; i < inputImagesPaths.size(); i++) {
+			fileNames[i] = inputImagesPaths.get(i).getName();
+		}
+
+		try {
+			for(String name : fileNames) {
+				
+			}
+		} catch(NullPointerException e) {
+			
+		}
+		
+		return "prefix";
+
 	}
 
 	public void saveHDRImage(File path) throws IOException {
 		ImageIO.write(hdrImage, "png", path);
 	}
-	
+
 	public void calculateHDRImage() throws ImageReadException, FileNotFoundException, IOException {
 		if (previewImage == null) {
 			throw new IllegalArgumentException("You have to load a directory before you can run HDrize!");
@@ -115,7 +137,7 @@ public class Model {
 		this.cameraCurve = new CameraCurve(images, samples, lambda, new MatrixCalculator());
 		this.cameraCurve.calculate();
 	}
-	
+
 	private void createHDRImage() throws ImageReadException, FileNotFoundException, IOException {
 		EnhancedImage[] images = new EnhancedImage[inputImagesPaths.size()];
 		for (int i = 0; i < images.length; i++) {
@@ -124,7 +146,7 @@ public class Model {
 		HDrize hdrize = new HDrize();
 		hdrImage = hdrize.createRGB(images, cameraCurve, toneMapping);
 	}
-	
+
 	private void calculateStandardCurve() throws ImageReadException, FileNotFoundException, IOException {
 		EnhancedImage[] images = new EnhancedImage[inputImagesPaths.size()];
 		for (int i = 0; i < images.length; i++) {

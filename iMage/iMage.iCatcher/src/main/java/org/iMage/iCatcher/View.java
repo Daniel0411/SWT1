@@ -323,7 +323,7 @@ public class View {
 		return path;
 	}
 
-	public void showImageLarge(Image image) {
+	public void showImageLarge(Image image, String title) {
 		JFrame imageFrame = new JFrame();
 		JLabel imageLabel = new JLabel();
 		JScrollPane scrollPane = new JScrollPane(imageLabel);
@@ -340,6 +340,7 @@ public class View {
 			imageFrame.setSize(imageWidth, imageHeight);
 		}
 		imageFrame.setResizable(false);
+		imageFrame.setTitle(title);
 		imageFrame.add(scrollPane);
 		imageFrame.setVisible(true);
 	}

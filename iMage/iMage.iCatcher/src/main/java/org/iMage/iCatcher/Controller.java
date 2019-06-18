@@ -31,8 +31,8 @@ public class Controller {
 			view.showError("You have to create a HDR Image before you can enlarge it!");
 			return;
 		}
-		view.showImageLarge(model.getHDRImage());
-		
+		view.showImageLarge(model.getHDRImage(), model.getLongestCommonPrefix());
+
 	}
 
 	/**
@@ -105,10 +105,10 @@ public class Controller {
 			return;
 		}
 		File path = view.savePNG(model.getHDRImage());
-		
+
 		try {
-			String fileEnding = path.getName().substring(path.getName().length() -3, path.getName().length());
-			if(!fileEnding.equals("png")) {
+			String fileEnding = path.getName().substring(path.getName().length() - 3, path.getName().length());
+			if (!fileEnding.equals("png")) {
 				view.showError("The HDR image can only be saved as a png file!");
 				return;
 			}
@@ -125,7 +125,17 @@ public class Controller {
 	 * @param ae ActionEvent
 	 */
 	public void saveCurve(ActionEvent ae) {
+		File path = view.savePNG(model.getHDRImage());
 		
+		try {
+			String fileEnding = path.getName().substring(path.getName().length() -3, path.getName().length());
+			if(!fileEnding.equals("png")) {
+				view.showError("The HDR image can only be saved as a png file!");
+				return;
+			}
+			model.saveHDRImage(path);} catch() {
+				
+			}
 	}
 
 	/**
