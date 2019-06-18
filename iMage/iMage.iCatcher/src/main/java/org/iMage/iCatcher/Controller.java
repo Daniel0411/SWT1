@@ -100,10 +100,19 @@ public class Controller {
 			return;
 		}
 		File path = view.savePNG(model.getHDRImage());
+		
 		try {
+			String fileEnding = path.getName().substring(path.getName().length() -3, path.getName().length());
+			System.out.println(fileEnding);
+			if(!fileEnding.equals("png")) {
+				view.showError("The HDR image can only be saved as a png file!");
+				return;
+			}
 			model.saveHDRImage(path);
 		} catch (IOException e) {
 			view.showError("An error occured while saving the picture: " + e.getMessage());
+		} catch (IndexOutOfBoundsException e) {
+			view.showError("The HDR image can only be saved as a png file!");
 		}
 	}
 
@@ -112,7 +121,7 @@ public class Controller {
 	 * @param ae ActionEvent
 	 */
 	public void saveCurve(ActionEvent ae) {
-
+		
 	}
 
 	/**
